@@ -1,0 +1,39 @@
+`define MINUS 1
+
+`define LS 2
+`define RS 3
+
+module alu([1:4]r, REGSEL,fcode,op0,op1,result,oflo,clk);
+parameter n=8, flen=2;
+input clk;
+        input [4:0]r;
+        input [1:0] REGSEL;
+input [flen-1:0] fcode; // operation code
+input [n-1:0] op0, op1; // operands
+output [n-1:0] result; // operation result
+output oflo; // overflow
+        reg [4:0]register ;
+        reg oflo;
+reg [n-1:0] result;
+always@(REGSEL)
+begin
+case(REGSEL)
+00:  begin register = r[1];end
+01:  begin register = r[2];  end
+10:  begin register = r[3]; end
+11:  begin register = r[4]; end
+end
+always @(fcode)
+begin
+result = 16'bxxxxxxxxxxxxxxxx;
+oflo = 1'bx;
+
+case (fcode)
+
+`MINUS: begin {oflo, result} = op0 - op1; end
+`RS: begin {oflo, result} = op0 >> 1; end
+`LS: begin {oflo, result} = op0 << 1; end
+
+endcase // case (fcode)
+end
+endmodule
