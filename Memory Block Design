@@ -1,0 +1,225 @@
+Main Code:
+module memory (clk, rst, rd_en, wr_en, addrreg_en, datareg_en, addrbuff_en, databuff_en, data_in, data_reg, data_buff, addr_in, addr_reg, addr_buff, data_out, addr_out);
+input clk, rst, rd_en, wr_en, addrreg_en, datareg_en, addrbuff_en, databuff_en;
+input [7:0]data_in;
+input [7:0]data_reg;
+input [7:0]data_buff;
+input [7:0]addr_in;
+input [7:0]addr_reg;
+input [7:0]addr_buff;
+output [7:0]data_out;
+output [7:0]addr_out;
+reg [7:0]data_out1;
+reg [7:0]addr_out1;
+reg [7:0]data_in1;
+reg [7:0]data_reg1;
+reg [7:0]data_buff1;
+reg [7:0]addr_in1;
+reg [7:0]addr_reg1;
+reg [7:0]addr_buff1;
+
+
+always@(posedge clk or posedge rst)
+begin
+        
+		data_reg1<=8'b10101010;
+		data_buff1<=8'b01111111;
+		addr_reg1<=8'b00001101;
+		addr_buff1<=8'b01010101;
+	
+	if ((rst!=1'b1) && (clk==1'b1)) 
+	begin
+		if ((rd_en==1'b1) && (addrreg_en==1'b1)) // Address register read
+			addr_out1<=addr_reg;
+		else if ((rd_en==1'b1) && (datareg_en==1'b1)) // Data register read
+			data_out1<=data_reg;
+		else if ((wr_en==1'b1) && (addrreg_en==1'b1)) // Address register write
+			addr_reg1<=addr_in;
+		else if ((wr_en==1'b1) && (datareg_en==1'b1)) // Dara register write
+			data_reg1<=data_in;
+		else if ((rd_en==1'b1) && (addrbuff_en==1'b1)) // Address buffer read
+			addr_out1<=addr_buff;
+		else if ((rd_en==1'b1) && (databuff_en==1'b1)) // Data buffer read
+			data_out1<=data_buff;
+		else if ((wr_en==1'b1) && (addrbuff_en==1'b1)) // Address buffer write
+			addr_buff1<=addr_in;
+		else if ((wr_en==1'b1) && (datareg_en==1'b1)) // Dara buffer write
+			data_buff1<=data_in;
+	end
+end
+
+assign data_out=data_out1;
+assign addr_out=addr_out1;
+assign data_reg=data_reg1;
+assign data_buff=data_buff1;
+assign addr_reg=addr_reg1;
+assign addr_buff=addr_buff1;
+
+endmodule
+
+Testbench:
+module tb_memory();
+
+reg clk, rst, rd_en, wr_en, addrreg_en, datareg_en, addrbuff_en, databuff_en;
+reg [7:0]data_in;
+reg [7:0]data_reg;
+reg [7:0]data_buff;
+reg [7:0]addr_in;
+reg [7:0]addr_reg;
+reg [7:0]addr_buff;
+wire [7:0]data_out;
+wire [7:0]addr_out;
+
+
+initial
+begin
+rst<=1'b1;
+#50;
+end
+
+initial
+    begin
+      repeat(100)
+	clk<=1'b1;
+	rst<=1'b0;
+        data_in<=8'b10101010;
+	addr_in<=8'b11101010;
+
+    end
+
+
+initial
+begin
+
+clk<=1'b1;
+rst<=1'b0;
+
+rd_en<=1'b1;
+addrreg_en<=1'b1;
+#50;
+
+clk<=1'b1;
+rst<=1'b0;
+rd_en<=1'b1;
+datareg_en<=1'b1;
+#50;
+
+wr_en<=1'b1;
+addrreg_en<=1'b1;
+#50;
+
+wr_en<=1'b1;
+datareg_en<=1'b1;
+#50;
+
+
+rd_en<=1'b1;
+addrbuff_en<=1'b1;
+#50;
+
+rd_en<=1'b1;
+databuff_en<=1'b1;
+#50;
+
+wr_en<=1'b1;
+addrbuff_en<=1'b1;
+#50;
+
+wr_en<=1'b1;
+databuff_en<=1'b1;
+#50;
+end
+memory abc(.clk(clk), .rst(rst), .rd_en(rd_en), .wr_en(wr_en), .addrreg_en(addrreg_en), .datareg_en(datareg_en), .addrbuff_en(addrbuff_en), .databuff_en(databuff_en), .data_in(data_in), .data_reg(data_reg), .data_buff(data_buff), .addr_in(addr_in), .addr_reg(addr_reg), .addr_buff(addr_buff), .data_out(data_out), .addr_out(addr_out));
+
+endmodule
+Test Bench:
+module tb_memory();
+reg clk, rst, rd_en, wr_en, addrreg_en, datareg_en, addrbuff_en, databuff_en;
+reg [7:0]data_in;
+reg [7:0]data_reg;
+reg [7:0]data_buff;
+reg [7:0]addr_in;
+reg [7:0]addr_reg;
+reg [7:0]addr_buff;
+wire [7:0]data_out;
+wire [7:0]addr_out;
+initial
+begin
+rst<=1'b1;
+#50;
+clk<=1'b1;
+rst<=1'b0;
+addr_reg<=8'b11101110;
+data_reg<=8'b10101011;
+addr_buff<=8'b11110000;
+data_buff<=8'b11001111;
+#50;
+clk<=1'b1;
+rst<=1'b0;
+rd_en<=1'b1;
+wr_en<=1'b0;
+addrreg_en<=1'b1;
+addrbuff_en<=1'b0;
+#50;
+clk<=1'b1;
+rst<=1'b0;
+rd_en<=1'b1;
+wr_en<=1'b0;
+datareg_en<=1'b1;
+databuff_en<=1'b0;
+#50;
+clk<=1'b1;
+rst<=1'b0;
+wr_en<=1'b1;
+rd_en<=1'b0;
+addr_in<=8'b11110101;
+addrreg_en<=1'b1;
+addrbuff_en<=1'b0;
+#50;
+clk<=1'b1;
+rst<=1'b0;
+wr_en<=1'b1;
+rd_en<=1'b0;
+data_in<=8'b11000000;
+datareg_en<=1'b1;
+databuff_en<=1'b0;
+#50;
+clk<=1'b1;
+rst<=1'b0;
+rd_en<=1'b1;
+wr_en<=1'b0;
+addrbuff_en<=1'b1;
+addrreg_en<=1'b0;
+#50;
+clk<=1'b1;
+rst<=1'b0;
+rd_en<=1'b1;
+wr_en<=1'b0;
+databuff_en<=1'b1;
+datareg_en<=1'b0;
+#50;
+clk<=1'b1;
+rst<=1'b0;
+wr_en<=1'b1;
+rd_en<=1'b0;
+addr_in<=8'b01010101;
+addrbuff_en<=1'b1;
+addrreg_en<=1'b0;
+#50;
+clk<=1'b1;
+rst<=1'b0;
+wr_en<=1'b1;
+rd_en<=1'b0;
+data_in<=8'b10101101;
+databuff_en<=1'b1;
+datareg_en<=1'b0;
+#50;
+end
+memory abc(.clk(clk), .rst(rst), .rd_en(rd_en), .wr_en(wr_en), .addrreg_en(addrreg_en),
+.datareg_en(datareg_en), .addrbuff_en(addrbuff_en), .databuff_en(databuff_en),
+.data_in(data_in), .data_reg(data_reg), .data_buff(data_buff), .addr_in(addr_in),
+.addr_reg(addr_reg), .addr_buff(addr_buff), .data_out(data_out), .addr_out(addr_out));
+endmodule
+
+
+
